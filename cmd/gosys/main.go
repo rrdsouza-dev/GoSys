@@ -10,18 +10,35 @@ import (
 
 func main() {
 	if len(os.Args) < 3 {
-		fmt.Println("Uso: gosys files scan <diretório>")
+		usage()
 		return
 	}
 
 	command := os.Args[1]
 	subcommand := os.Args[2]
 
-	if command != "files" || subcommand != "scan" {
-		fmt.Println("Comando desconhecido")
-		return
+	switch command {
+	case "files":
+		handleFilesCommand(subcommand)
+	default:
+		fmt.Printf("Comando desconhecido: %s\n\n", command)
+		usage()
 	}
+}
 
+func handleFilesCommand(subcommand string) {
+	switch subcommand {
+	case "scan":
+		scanFiles()
+	case "search":
+		searchFiles()
+	default:
+		fmt.Printf("Subcomando desconhecido: %s\n\n", subcommand)
+		usage()
+	}
+}
+
+func scanFiles() {
 	root := "."
 
 	if len(os.Args) >= 4 {
@@ -41,4 +58,31 @@ func main() {
 
 		fmt.Printf("[FILE] %s (%d bytes)\n", entry.Path, entry.Size)
 	}
+}
+
+func searchFiles() {
+	if len(os.Args) < 5 {
+		fmt.Println("Uso: gosys files search <diretório> <nome>")
+		return
+	}
+
+	root := os.Args[3]
+	query := os.Args[4]
+
+	entries, err := files.Search(root, query)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, entry := range entries {
+		fmt.Printf("[FILE] %s (%d bytes)\n", entry.Path, entry.Size)
+	}
+}
+
+func usage() {
+	fmt.Println("GoSys - System Toolkit")
+	fmt.Println()
+	fmt.Println("Uso:")
+	fmt.Println("  gosys files scan <diretório>")
+	fmt.Println("  gosys files search <diretório> <nome>")
 }
