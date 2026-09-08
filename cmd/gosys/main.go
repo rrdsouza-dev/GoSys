@@ -32,6 +32,8 @@ func handleFilesCommand(subcommand string) {
 		scanFiles()
 	case "search":
 		searchFiles()
+	case "hash":
+		hashFile()
 	default:
 		fmt.Printf("Subcomando desconhecido: %s\n\n", subcommand)
 		usage()
@@ -79,10 +81,27 @@ func searchFiles() {
 	}
 }
 
+func hashFile() {
+	if len(os.Args) < 4 {
+		fmt.Println("Uso: gosys files hash <arquivo>")
+		return
+	}
+
+	path := os.Args[3]
+
+	hash, err := files.Hash(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(hash)
+}
+
 func usage() {
 	fmt.Println("GoSys - System Toolkit")
 	fmt.Println()
 	fmt.Println("Uso:")
 	fmt.Println("  gosys files scan <diretório>")
 	fmt.Println("  gosys files search <diretório> <nome>")
+	fmt.Println("  gosys files hash <arquivo>")
 }
