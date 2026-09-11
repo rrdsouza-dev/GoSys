@@ -74,6 +74,27 @@ func handleFilesCommand(subcommand string) {
 			fmt.Printf("[FILE] %s (%d bytes)\n", entry.Path, entry.Size)
 		}
 
+	case "modified":
+		if len(os.Args) < 4 {
+			fmt.Println("Uso: gosys files modified <diretório>")
+			return
+		}
+
+		root := os.Args[3]
+
+		entries, err := files.Modified(root)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		for _, entry := range entries {
+			fmt.Printf(
+				"[FILE] %s — %s\n",
+				entry.Path,
+				entry.Modified.Format("02/01/2006 15:04:05"),
+			)
+		}
+
 	default:
 		fmt.Printf("Subcomando desconhecido: %s\n\n", subcommand)
 		usage()
@@ -160,4 +181,5 @@ func usage() {
 	fmt.Println("  gosys files extension <arquivo>")
 	fmt.Println("  gosys files empty <diretório>")
 	fmt.Println("  gosys files size <diretório>")
+	fmt.Println("  gosys files modified <diretório>")
 }

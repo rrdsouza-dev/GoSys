@@ -4,14 +4,16 @@ import (
 	"context"
 	"io/fs"
 	"path/filepath"
+	"time"
 )
 
 // Entry representa um arquivo ou diretório encontrado durante o scan.
 type Entry struct {
-	Path  string
-	Size  int64
-	IsDir bool
-	Err   error
+	Path     string
+	Size     int64
+	IsDir    bool
+	Modified time.Time
+	Err      error
 }
 
 // Scan percorre recursivamente o diretório root e retorna todos os itens encontrados.
