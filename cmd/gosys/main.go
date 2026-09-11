@@ -112,6 +112,31 @@ func handleFilesCommand(subcommand string) {
 			fmt.Printf("[FILE] %s (%d bytes)\n", entry.Path, entry.Size)
 		}
 
+	case "duplicates":
+		if len(os.Args) < 4 {
+			fmt.Println("Uso: gosys files duplicates <diretório>")
+			return
+		}
+
+		root := os.Args[3]
+
+		hashes, err := files.Duplicates(root)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		for hash, entries := range hashes {
+			if len(entries) < 2 {
+				continue
+			}
+
+			fmt.Printf("\n[HASH] %s\n", hash)
+
+			for _, entry := range entries {
+				fmt.Printf("[DUPLICATE] %s (%d bytes)\n", entry.Path, entry.Size)
+			}
+		}
+
 	default:
 		fmt.Printf("Subcomando desconhecido: %s\n\n", subcommand)
 		usage()
@@ -200,4 +225,5 @@ func usage() {
 	fmt.Println("  gosys files size <diretório>")
 	fmt.Println("  gosys files modified <diretório>")
 	fmt.Println("  gosys files largest <diretório>")
+	fmt.Println("  gosys files duplicates <diretório>")
 }
