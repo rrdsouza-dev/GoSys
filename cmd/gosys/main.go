@@ -34,6 +34,8 @@ func handleFilesCommand(subcommand string) {
 		searchFiles()
 	case "hash":
 		hashFile()
+	case "extension":
+		extensionFile()
 	default:
 		fmt.Printf("Subcomando desconhecido: %s\n\n", subcommand)
 		usage()
@@ -97,6 +99,19 @@ func hashFile() {
 	fmt.Println(hash)
 }
 
+func extensionFile() {
+	if len(os.Args) < 4 {
+		fmt.Println("Uso: gosys files extension <arquivo>")
+		return
+	}
+
+	path := os.Args[3]
+
+	extension := files.GetExtension(path)
+
+	fmt.Println(extension)
+}
+
 func usage() {
 	fmt.Println("GoSys - System Toolkit")
 	fmt.Println()
@@ -104,4 +119,5 @@ func usage() {
 	fmt.Println("  gosys files scan <diretório>")
 	fmt.Println("  gosys files search <diretório> <nome>")
 	fmt.Println("  gosys files hash <arquivo>")
+	fmt.Println("  gosys files extension <arquivo>")
 }
