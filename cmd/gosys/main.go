@@ -30,12 +30,16 @@ func handleFilesCommand(subcommand string) {
 	switch subcommand {
 	case "scan":
 		scanFiles()
+
 	case "search":
 		searchFiles()
+
 	case "hash":
 		hashFile()
+
 	case "extension":
 		extensionFile()
+
 	case "empty":
 		if len(os.Args) < 4 {
 			fmt.Println("Uso: gosys files empty <diretório>")
@@ -51,6 +55,23 @@ func handleFilesCommand(subcommand string) {
 
 		for _, entry := range entries {
 			fmt.Printf("[EMPTY] %s\n", entry.Path)
+		}
+
+	case "size":
+		if len(os.Args) < 4 {
+			fmt.Println("Uso: gosys files size <diretório>")
+			return
+		}
+
+		root := os.Args[3]
+
+		entries, err := files.Size(root)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		for _, entry := range entries {
+			fmt.Printf("[FILE] %s (%d bytes)\n", entry.Path, entry.Size)
 		}
 
 	default:
@@ -138,4 +159,5 @@ func usage() {
 	fmt.Println("  gosys files hash <arquivo>")
 	fmt.Println("  gosys files extension <arquivo>")
 	fmt.Println("  gosys files empty <diretório>")
+	fmt.Println("  gosys files size <diretório>")
 }
