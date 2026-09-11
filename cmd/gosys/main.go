@@ -163,6 +163,46 @@ func handleFilesCommand(subcommand string) {
 			fmt.Println("Os arquivos são diferentes.")
 		}
 
+	case "integrity":
+		if len(os.Args) < 5 {
+			fmt.Println("Uso: gosys files integrity <arquivo> <hash>")
+			return
+		}
+
+		path := os.Args[3]
+		expectedHash := os.Args[4]
+
+		valid, err := files.Integrity(path, expectedHash)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if valid {
+			fmt.Println("Integridade confirmada.")
+		} else {
+			fmt.Println("Integridade comprometida.")
+		}
+
+	case "rename":
+		if len(os.Args) < 5 {
+			fmt.Println("Uso: gosys files rename <origem> <destino>")
+			return
+		}
+
+		oldPath := os.Args[3]
+		newPath := os.Args[4]
+
+		err := files.Rename(oldPath, newPath)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Printf(
+			"Arquivo renomeado: %s -> %s\n",
+			oldPath,
+			newPath,
+		)
+
 	default:
 		fmt.Printf("Subcomando desconhecido: %s\n\n", subcommand)
 		usage()
@@ -253,4 +293,6 @@ func usage() {
 	fmt.Println("  gosys files largest <diretório>")
 	fmt.Println("  gosys files duplicates <diretório>")
 	fmt.Println("  gosys files compare <arquivo1> <arquivo2>")
+	fmt.Println("  gosys files integrity <arquivo> <hash>")
+	fmt.Println("  gosys files rename <origem> <destino>")
 }
