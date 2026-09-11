@@ -20,6 +20,7 @@ func main() {
 	switch command {
 	case "files":
 		handleFilesCommand(subcommand)
+
 	default:
 		fmt.Printf("Comando desconhecido: %s\n\n", command)
 		usage()
@@ -28,6 +29,7 @@ func main() {
 
 func handleFilesCommand(subcommand string) {
 	switch subcommand {
+
 	case "scan":
 		scanFiles()
 
@@ -133,8 +135,32 @@ func handleFilesCommand(subcommand string) {
 			fmt.Printf("\n[HASH] %s\n", hash)
 
 			for _, entry := range entries {
-				fmt.Printf("[DUPLICATE] %s (%d bytes)\n", entry.Path, entry.Size)
+				fmt.Printf(
+					"[DUPLICATE] %s (%d bytes)\n",
+					entry.Path,
+					entry.Size,
+				)
 			}
+		}
+
+	case "compare":
+		if len(os.Args) < 5 {
+			fmt.Println("Uso: gosys files compare <arquivo1> <arquivo2>")
+			return
+		}
+
+		path1 := os.Args[3]
+		path2 := os.Args[4]
+
+		same, err := files.Compare(path1, path2)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if same {
+			fmt.Println("Os arquivos são iguais.")
+		} else {
+			fmt.Println("Os arquivos são diferentes.")
 		}
 
 	default:
@@ -226,4 +252,5 @@ func usage() {
 	fmt.Println("  gosys files modified <diretório>")
 	fmt.Println("  gosys files largest <diretório>")
 	fmt.Println("  gosys files duplicates <diretório>")
+	fmt.Println("  gosys files compare <arquivo1> <arquivo2>")
 }
