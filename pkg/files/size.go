@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 )
 
+// Função para retornar o tamanho de todos os arquivos em um diretório
 func Size(root string) ([]Entry, error) {
 	var entries []Entry
 
