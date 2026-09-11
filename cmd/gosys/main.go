@@ -95,6 +95,23 @@ func handleFilesCommand(subcommand string) {
 			)
 		}
 
+	case "largest":
+		if len(os.Args) < 4 {
+			fmt.Println("Uso: gosys files largest <diretório>")
+			return
+		}
+
+		root := os.Args[3]
+
+		entries, err := files.Largest(root)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		for _, entry := range entries {
+			fmt.Printf("[FILE] %s (%d bytes)\n", entry.Path, entry.Size)
+		}
+
 	default:
 		fmt.Printf("Subcomando desconhecido: %s\n\n", subcommand)
 		usage()
@@ -182,4 +199,5 @@ func usage() {
 	fmt.Println("  gosys files empty <diretório>")
 	fmt.Println("  gosys files size <diretório>")
 	fmt.Println("  gosys files modified <diretório>")
+	fmt.Println("  gosys files largest <diretório>")
 }
