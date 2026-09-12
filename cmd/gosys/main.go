@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/rrdsouza-dev/GoSys/pkg/disk"
 	"github.com/rrdsouza-dev/GoSys/pkg/files"
 )
 
@@ -20,6 +21,9 @@ func main() {
 	switch command {
 	case "files":
 		handleFilesCommand(subcommand)
+
+	case "disk":
+		handleDiskCommand(subcommand)
 
 	default:
 		fmt.Printf("Comando desconhecido: %s\n\n", command)
@@ -209,6 +213,30 @@ func handleFilesCommand(subcommand string) {
 	}
 }
 
+func handleDiskCommand(subcommand string) {
+	switch subcommand {
+
+	case "usage":
+		if len(os.Args) < 4 {
+			fmt.Println("Uso: gosys disk usage <diretório>")
+			return
+		}
+
+		root := os.Args[3]
+
+		total, err := disk.GetUsage(root)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Printf("Uso total: %d bytes\n", total)
+
+	default:
+		fmt.Printf("Subcomando desconhecido: %s\n\n", subcommand)
+		usage()
+	}
+}
+
 func scanFiles() {
 	root := "."
 
@@ -295,4 +323,5 @@ func usage() {
 	fmt.Println("  gosys files compare <arquivo1> <arquivo2>")
 	fmt.Println("  gosys files integrity <arquivo> <hash>")
 	fmt.Println("  gosys files rename <origem> <destino>")
+	fmt.Println("  gosys disk usage <diretório>")
 }
