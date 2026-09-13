@@ -224,12 +224,35 @@ func handleDiskCommand(subcommand string) {
 
 		root := os.Args[3]
 
-		total, err := disk.GetUsage(root)
+		files, err := disk.Largest(root)
 		if err != nil {
 			log.Fatal(err)
 		}
 
+		var total int64
+
+		for _, file := range files {
+			total += file.Size
+		}
+
 		fmt.Printf("Uso total: %d bytes\n", total)
+
+	case "largest":
+		if len(os.Args) < 4 {
+			fmt.Println("Uso: gosys disk largest <diretório>")
+			return
+		}
+
+		root := os.Args[3]
+
+		files, err := disk.Largest(root)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		for _, file := range files {
+			fmt.Printf("[FILE] %s (%d bytes)\n", file.Path, file.Size)
+		}
 
 	default:
 		fmt.Printf("Subcomando desconhecido: %s\n\n", subcommand)
@@ -324,4 +347,5 @@ func usage() {
 	fmt.Println("  gosys files integrity <arquivo> <hash>")
 	fmt.Println("  gosys files rename <origem> <destino>")
 	fmt.Println("  gosys disk usage <diretório>")
+	fmt.Println("  gosys disk largest <diretório>")
 }
