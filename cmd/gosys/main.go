@@ -7,6 +7,7 @@ import (
 
 	"github.com/rrdsouza-dev/GoSys/pkg/disk"
 	"github.com/rrdsouza-dev/GoSys/pkg/files"
+	"github.com/rrdsouza-dev/GoSys/pkg/process"
 )
 
 func main() {
@@ -25,6 +26,9 @@ func main() {
 	case "disk":
 		handleDiskCommand(subcommand)
 
+	case "process":
+		handleProcessCommand(subcommand)
+
 	default:
 		fmt.Printf("Comando desconhecido: %s\n\n", command)
 		usage()
@@ -33,7 +37,6 @@ func main() {
 
 func handleFilesCommand(subcommand string) {
 	switch subcommand {
-
 	case "scan":
 		scanFiles()
 
@@ -94,11 +97,7 @@ func handleFilesCommand(subcommand string) {
 		}
 
 		for _, entry := range entries {
-			fmt.Printf(
-				"[FILE] %s — %s\n",
-				entry.Path,
-				entry.Modified.Format("02/01/2006 15:04:05"),
-			)
+			fmt.Printf("[FILE] %s — %s\n", entry.Path, entry.Modified.Format("02/01/2006 15:04:05"))
 		}
 
 	case "largest":
@@ -139,11 +138,7 @@ func handleFilesCommand(subcommand string) {
 			fmt.Printf("\n[HASH] %s\n", hash)
 
 			for _, entry := range entries {
-				fmt.Printf(
-					"[DUPLICATE] %s (%d bytes)\n",
-					entry.Path,
-					entry.Size,
-				)
+				fmt.Printf("[DUPLICATE] %s (%d bytes)\n", entry.Path, entry.Size)
 			}
 		}
 
@@ -201,11 +196,7 @@ func handleFilesCommand(subcommand string) {
 			log.Fatal(err)
 		}
 
-		fmt.Printf(
-			"Arquivo renomeado: %s -> %s\n",
-			oldPath,
-			newPath,
-		)
+		fmt.Printf("Arquivo renomeado: %s -> %s\n", oldPath, newPath)
 
 	default:
 		fmt.Printf("Subcomando desconhecido: %s\n\n", subcommand)
@@ -215,7 +206,6 @@ func handleFilesCommand(subcommand string) {
 
 func handleDiskCommand(subcommand string) {
 	switch subcommand {
-
 	case "usage":
 		if len(os.Args) < 4 {
 			fmt.Println("Uso: gosys disk usage <diretório>")
@@ -252,6 +242,41 @@ func handleDiskCommand(subcommand string) {
 
 		for _, file := range files {
 			fmt.Printf("[FILE] %s (%d bytes)\n", file.Path, file.Size)
+		}
+
+	default:
+		fmt.Printf("Subcomando desconhecido: %s\n\n", subcommand)
+		usage()
+	}
+}
+
+func handleProcessCommand(subcommand string) {
+	switch subcommand {
+	case "list":
+		processes, err := process.ListWin()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		for _, proc := range processes {
+			fmt.Printf("[PROCESS] %s (PID: %s)\n", proc.Name, proc.PID)
+		}
+
+	case "find":
+		if len(os.Args) < 4 {
+			fmt.Println("Uso: gosys process find <nome>")
+			return
+		}
+
+		query := os.Args[3]
+
+		processes, err := process.FindWin(query)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		for _, proc := range processes {
+			fmt.Printf("[PROCESS] %s (PID: %s)\n", proc.Name, proc.PID)
 		}
 
 	default:
@@ -348,4 +373,6 @@ func usage() {
 	fmt.Println("  gosys files rename <origem> <destino>")
 	fmt.Println("  gosys disk usage <diretório>")
 	fmt.Println("  gosys disk largest <diretório>")
+	fmt.Println("  gosys process list")
+	fmt.Println("  gosys process find <nome>")
 }
