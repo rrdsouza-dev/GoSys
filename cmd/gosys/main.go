@@ -8,6 +8,7 @@ import (
 	"github.com/rrdsouza-dev/GoSys/pkg/disk"
 	"github.com/rrdsouza-dev/GoSys/pkg/files"
 	"github.com/rrdsouza-dev/GoSys/pkg/process"
+	"github.com/rrdsouza-dev/GoSys/pkg/system"
 )
 
 func main() {
@@ -28,6 +29,9 @@ func main() {
 
 	case "process":
 		handleProcessCommand(subcommand)
+
+	case "system":
+		handleSystemCommand(subcommand)
 
 	default:
 		fmt.Printf("Comando desconhecido: %s\n\n", command)
@@ -285,6 +289,38 @@ func handleProcessCommand(subcommand string) {
 	}
 }
 
+func handleSystemCommand(subcommand string) {
+	switch subcommand {
+	case "cpu":
+		usage, err := system.CPU()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Printf("Uso da CPU: %.2f%%\n", usage)
+
+	case "memory":
+		memory, err := system.Memory()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Printf("Memória livre: %.2f KB\n", memory)
+
+	case "info":
+		info, err := system.Info()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Println(info)
+
+	default:
+		fmt.Printf("Subcomando desconhecido: %s\n\n", subcommand)
+		usage()
+	}
+}
+
 func scanFiles() {
 	root := "."
 
@@ -375,4 +411,7 @@ func usage() {
 	fmt.Println("  gosys disk largest <diretório>")
 	fmt.Println("  gosys process list")
 	fmt.Println("  gosys process find <nome>")
+	fmt.Println("  gosys system cpu")
+	fmt.Println("  gosys system memory")
+	fmt.Println("  gosys system info")
 }
